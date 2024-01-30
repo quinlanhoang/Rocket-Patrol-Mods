@@ -4,6 +4,7 @@
 // Mods:
 // Allow the player to control the Rocket after it's fired (1)
 // Implement mouse control for player movement and left mouse click to fire (5)
+// Create a new enemy Spaceship type (w/ new artwork) that's smaller, moves faster, and is worth more points (5)
 
 // Citations
 

@@ -25,10 +25,11 @@ class Play extends Phaser.Scene {
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
         //keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
 
-        //add x3 spaceships
+        //add x4 spaceships
         this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship', 0, 30).setOrigin(0, 0)
         this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship', 0, 20).setOrigin(0, 0)
         this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship', 0, 10).setOrigin(0, 0)
+        this.ship04 = new SmallSpaceship(this, game.config.width + borderUISize*8.5, borderUISize*9, 'smallSpaceship', 0, 50).setOrigin(0,0)
 
         //initalizes score
         this.p1Score = 0
@@ -83,7 +84,9 @@ class Play extends Phaser.Scene {
             this.ship01.update() //update spaceships
             this.ship02.update()
             this.ship03.update()
-
+            this.ship04.update()
+        
+        //left click functionality
             if (this.input.activePointer.leftButtonDown() && !this.isFiring) {
                 this.p1Rocket.isFiring = true
                 
@@ -99,6 +102,10 @@ class Play extends Phaser.Scene {
         }
 
         //checks collisions
+        if(this.checkCollision(this.p1Rocket, this.ship04)) {
+            this.p1Rocket.reset()
+            this.shipExplode(this.ship04)
+        }
         if(this.checkCollision(this.p1Rocket, this.ship03)) {
             this.p1Rocket.reset()
             this.shipExplode(this.ship03)
