@@ -20,10 +20,10 @@ class Play extends Phaser.Scene {
         this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0)
 
         //defines hotkeys
-        keyFIRE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
+        keyFIRE = this.input.activePointer.leftButtonDown()
         keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
-        keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
+        //keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
 
         //add x3 spaceships
         this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship', 0, 30).setOrigin(0, 0)
@@ -76,11 +76,26 @@ class Play extends Phaser.Scene {
 
         if(!this.gameOver) {
 
-        
+            //input based off mouse movement
+            this.p1Rocket.x = Phaser.Math.Clamp(this.input.x, borderUISize, game.config.width - borderUISize) //allows for mouse control
             this.p1Rocket.update() //update rocket
+            
             this.ship01.update() //update spaceships
             this.ship02.update()
             this.ship03.update()
+
+            if (this.input.activePointer.leftButtonDown() && !this.isFiring) {
+                this.p1Rocket.isFiring = true
+                
+                if (!this.p1Rocket.sfxShotPlayed) {
+                    this.p1Rocket.sfxShot.play();
+                    this.p1Rocket.sfxShotPlayed = true
+                }
+            }
+
+            if (this.p1Rocket.isFiring && this.p1Rocket.y === game.config.height - borderUISize - borderPadding) {
+                this.p1Rocket.sfxShotPlayed = false
+            }
         }
 
         //checks collisions
@@ -128,4 +143,4 @@ class Play extends Phaser.Scene {
 
         this.sound.play('sfx-explosion')
     }
-}
+}   
