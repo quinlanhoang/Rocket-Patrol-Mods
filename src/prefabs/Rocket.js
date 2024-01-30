@@ -36,6 +36,10 @@ class Rocket extends Phaser.GameObjects.Sprite {
         if(this.y <= borderUISize * 3 + borderPadding) {
             this.isFiring = false
             this.y = game.config.height - borderUISize - borderPadding
+
+            //subtracts 5 seconds for missing
+            this.scene.clock.delay -= 5000
+            this.scene.timeLeft.text = 'Time: ' + Phaser.Math.FloorTo(this.scene.clock.delay /1000)
         }
     }
 

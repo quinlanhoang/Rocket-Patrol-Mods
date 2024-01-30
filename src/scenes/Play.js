@@ -1,3 +1,4 @@
+const TIME_PENALTY = 5000
 
 class Play extends Phaser.Scene {
     constructor() {
@@ -29,7 +30,7 @@ class Play extends Phaser.Scene {
         this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship', 0, 30).setOrigin(0, 0)
         this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship', 0, 20).setOrigin(0, 0)
         this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship', 0, 10).setOrigin(0, 0)
-        this.ship04 = new SmallSpaceship(this, game.config.width + borderUISize*8.5, borderUISize*9, 'smallSpaceship', 0, 50).setOrigin(0,0)
+        this.ship04 = new SmallSpaceship(this, game.config.width + borderUISize*6, borderUISize*5, 'smallSpaceship', 0, 50).setOrigin(0,0)
 
         //initalizes score
         this.p1Score = 0
@@ -49,6 +50,22 @@ class Play extends Phaser.Scene {
         }
 
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig)
+
+        //displayers timer
+        let timerConfig = {
+            fontFamily: 'Courier',
+            fontSize: '20px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'right',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        }
+
+        this.timeLeft = this.add.text(game.config.width - borderUISize - borderPadding, borderUISize + borderPadding * 2, '', timerConfig).setOrigin(1,0)
 
         //GAME OVER flag
         this.gameOver = false
@@ -76,6 +93,10 @@ class Play extends Phaser.Scene {
         this.starfield.tilePositionX -= 4
 
         if(!this.gameOver) {
+
+            //timer
+            let remainingTime = Phaser.Math.FloorTo ((this.clock.delay - this.clock.elapsed) / 1000)
+            this.timeLeft.text = 'Time: ' + remainingTime
 
             //input based off mouse movement
             this.p1Rocket.x = Phaser.Math.Clamp(this.input.x, borderUISize, game.config.width - borderUISize) //allows for mouse control
@@ -138,16 +159,24 @@ class Play extends Phaser.Scene {
         //create explosion sprite at the ship's position
         let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0, 0);
         boom.anims.play('explode') //play explode anim
+        
         boom.on('animationcomplete', () => { //callback after anim completes
             ship.reset() //reset ship position
             ship.alpha = 1 //make ship 
             boom.destroy() //remove explosion sprite
+
+            //score add and text update
+            this.p1Score += ship.points
+            this.scoreLeft.text = this.p1Score
+
+            //time bonus
+            if (ship.points > 0) {
+                this.clock.delay += 3000
+            } 
+
+            this.timeLeft.text = 'Time: ' + Phaser.Math.FloorTo(this.clock.delay / 1000) 
+
+            this.sound.play('sfx-explosion')
         })
-
-        //score add and text update
-        this.p1Score += ship.points
-        this.scoreLeft.text = this.p1Score
-
-        this.sound.play('sfx-explosion')
     }
 }   
